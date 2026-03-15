@@ -8,21 +8,31 @@ public class DogController : MonoBehaviour
     public float jumpForce = 7f;
 
     Rigidbody2D rb;
+    GameManager gameManager;
+    Animator animator;
 
+    
     void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
+        if(gameManager.gameStarted == false)
+        {
+            return;
+        }
+        
         float move = Input.GetAxis("Horizontal");
 
         transform.Translate(Vector3.right * move * moveSpeed * Time.deltaTime);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            animator.SetTrigger("jump");
         }
     }
 }
