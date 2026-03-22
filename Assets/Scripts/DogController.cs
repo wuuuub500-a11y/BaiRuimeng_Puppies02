@@ -10,6 +10,10 @@ public class DogController : MonoBehaviour
     Rigidbody2D rb;
     GameManager gameManager;
     Animator animator;
+    
+    public int score = 0;
+    private bool isOverlappingFrisbee = false;
+    GameObject frisbee;
 
     
     void Start()
@@ -33,6 +37,35 @@ public class DogController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             animator.SetTrigger("jump");
+            if (isOverlappingFrisbee)
+            {
+                Destroy(frisbee.transform.parent.gameObject);
+                animator.SetBool("success", true);
+                Invoke(nameof(SetAnimationFalse),1f);
+            }
         }
+    }
+    
+    
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Frisbee"))
+        {
+            isOverlappingFrisbee = true;
+            frisbee = other.gameObject;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Frisbee"))
+        {
+            isOverlappingFrisbee = false;
+        }
+    }
+    
+    void SetAnimationFalse()
+    {
+        animator.SetBool("success", false);
     }
 }
