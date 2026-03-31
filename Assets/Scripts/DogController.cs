@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+// Assets/Scripts/DogController.cs
 using UnityEngine;
 
 public class DogController : MonoBehaviour
@@ -7,47 +6,69 @@ public class DogController : MonoBehaviour
     public float moveSpeed = 5f;
     public float jumpForce = 7f;
 
-    Rigidbody2D rb;
-    GameManager gameManager;
-    Animator animator;
-    
+    [Header("Catch FX")]
+    public GameObject catchFxPrefab;
+    public GameObject missFxPrefab;
+    public Transform fxSpawnPoint;
+
+    private Rigidbody2D rb;
+    private GameManager gameManager;
+    private Animator animator;
+
     public int score = 0;
     private bool isOverlappingFrisbee = false;
-    GameObject frisbee;
+    private GameObject frisbee;
 
-    
-    void Start()
+    private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
-        if(gameManager.gameStarted == false)
+        if (gameManager == null || gameManager.gameStarted == false)
         {
             return;
         }
-        
-        float move = Input.GetAxis("Horizontal");
 
+        float move = Input.GetAxis("Horizontal");
         transform.Translate(Vector3.right * move * moveSpeed * Time.deltaTime);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             animator.SetTrigger("jump");
+
             if (isOverlappingFrisbee)
             {
-                Destroy(frisbee.transform.parent.gameObject);
+                if (frisbee != null)
+                {
+                    Destroy(frisbee.transform.parent != null ? frisbee.transform.parent.gameObject : frisbee);
+                }
+
                 animator.SetBool("success", true);
-                Invoke(nameof(SetAnimationFalse),1f);
+                gameManager.AddScore(1);
+                SpawnFx(catchFxPrefab);
+
+                Invoke(nameof(SetAnimationFalse), 1f);
+            }
+            else
+            {
+                SpawnFx(missFxPrefab);
             }
         }
     }
-    
-    
-    void OnTriggerEnter2D(Collider2D other)
+
+    private void SpawnFx(GameObject prefab)
+    {
+        if (prefab == null) return;
+
+        Transform spawn = fxSpawnPoint != null ? fxSpawnPoint : transform;
+        Instantiate(prefab, spawn.position, Quaternion.identity);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Frisbee"))
         {
@@ -56,15 +77,19 @@ public class DogController : MonoBehaviour
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Frisbee"))
         {
             isOverlappingFrisbee = false;
+            if (frisbee == other.gameObject)
+            {
+                frisbee = null;
+            }
         }
     }
-    
-    void SetAnimationFalse()
+
+    private void SetAnimationFalse()
     {
         animator.SetBool("success", false);
     }

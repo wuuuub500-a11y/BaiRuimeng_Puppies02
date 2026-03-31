@@ -1,21 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
+// Assets/Scripts/GameStartBtn.cs
 using UnityEngine;
 
 public class GameStartBtn : MonoBehaviour
 {
-    public GameObject dog1;
-    public GameObject dog2;
+    [Header("Canvas Switch")]
+    public GameObject startCanvas;
+    public GameObject ingameCanvas;
+
     public void StartGame()
     {
         GameManager gameManager = FindObjectOfType<GameManager>();
         if (gameManager != null)
         {
-            gameManager.gameStarted = true;
+            gameManager.StartGame();
         }
-        dog1.SetActive(false);
-        dog2.SetActive(true);
+
+        if (startCanvas != null)
+        {
+            startCanvas.SetActive(false);
+        }
+
+        if (ingameCanvas != null)
+        {
+            ingameCanvas.SetActive(true);
+        }
+
         gameObject.SetActive(false);
-        
     }
 }
