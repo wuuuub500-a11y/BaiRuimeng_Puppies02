@@ -30,7 +30,5 @@ public class MazeManager : MonoBehaviour
                 child.SetActive(false);
             }
         }
-
-        Debug.Log("当前加载的迷宫索引是: " + randomIndex);
     }
 }
