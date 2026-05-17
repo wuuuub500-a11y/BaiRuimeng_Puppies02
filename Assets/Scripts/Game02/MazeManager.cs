@@ -4,12 +4,8 @@ using UnityEngine;
 
 public class MazeManager : MonoBehaviour
 {
-    void Start()
-    {
-        RandomizeMaze();
-    }
 
-    void RandomizeMaze()
+    public void RandomizeMaze()
     {
         int childCount = transform.childCount;
 
